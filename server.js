@@ -7,7 +7,7 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 const accountSid = "AC0452ce9d33fc4fb54ca57b33bd4deb08"; // استبدل بقيمتك من Twilio
-const authToken = "7640ee31188aaf902dbfc01bb6209b89";   // استبدل بقيمتك من Twilio
+const authToken = "95ee641a56a7a3ba9a4a775bf58ab44e";   // استبدل بقيمتك من Twilio
 const client = twilio(accountSid, authToken);
 
 let generatedOtp = "";
