@@ -6,8 +6,11 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
-const accountSid = "AC0452ce9d33fc4fb54ca57b33bd4deb08"; // استبدل بقيمتك من Twilio
-const authToken = "95ee641a56a7a3ba9a4a775bf58ab44e";   // استبدل بقيمتك من Twilio
+// ✅ استخدم متغيرات البيئة بدل القيم المباشرة
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const fromWhatsApp = process.env.TWILIO_PHONE_NUMBER;
+
 const client = twilio(accountSid, authToken);
 
 let generatedOtp = "";
@@ -19,15 +22,15 @@ app.post("/submit", async (req, res) => {
   generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
 
   try {
- await client.messages.create({
-  body: `رمز التحقق الخاص بك هو: ${generatedOtp}`,
-  from: "whatsapp:+14155238886",
-  to: "whatsapp:+966592307185"  // رقمك المسجل
-});
+    await client.messages.create({
+      body: `رمز التحقق الخاص بك هو: ${generatedOtp}`,
+      from: fromWhatsApp, // رقم Twilio من المتغير البيئي
+      to: `whatsapp:${userPhone}`, // رقم المستخدم من الطلب
+    });
 
     res.status(200).send("OTP sent");
   } catch (error) {
-    console.error(error);
+    console.error("❌ Twilio error:", error.message);
     res.status(500).send("Error sending OTP");
   }
 });
@@ -42,8 +45,4 @@ app.post("/verify", (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-});
-
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
