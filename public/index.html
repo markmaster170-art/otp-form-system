@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نموذج تقديم الطلب</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="logo.png" alt="شعار الشركة" class="logo">
+    <h2>نموذج تقديم الطلب</h2>
+
+    <section id="formSection">
+      <form id="otpForm">
+        <input type="text" id="fullName" placeholder="الاسم الكامل" required>
+        <input type="text" id="nationalId" placeholder="رقم الهوية" required>
+        <input type="number" id="salary" placeholder="الراتب الشهري" required>
+        <select id="workSector" required>
+          <option value="">اختر قطاع العمل</option>
+          <option value="حكومي">حكومي</option>
+          <option value="خاص">خاص</option>
+          <option value="عمل حر">عمل حر</option>
+        </select>
+        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+        <input type="tel" id="phone" placeholder="رقم الجوال بصيغة +966..." required>
+        <button type="submit">تقديم الطلب</button>
+        <p class="note">📱 سيتم إرسال رمز التحقق عبر WhatsApp.</p>
+      </form>
+    </section>
+
+    <section id="otpSection" style="display:none;">
+      <form id="verifyForm">
+        <input type="text" id="otp" placeholder="أدخل رمز التحقق" required>
+        <button type="submit">تحقق</button>
+      </form>
+    </section>
+
+    <section id="successSection" style="display:none;">
+      <h3>✅ تم تقديم الطلب بنجاح</h3>
+      <p>شكرًا لك، تم استلام بياناتك بنجاح وسيتم التواصل معك قريبًا.</p>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
