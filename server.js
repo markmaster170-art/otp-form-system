@@ -3,6 +3,10 @@ import express from "express";
 import bodyParser from "body-parser";
 
 const app = express();
+app.get("/", (req, res) => {
+  res.send("🚀 OTP Server is running successfully!");
+});
+
 app.use(bodyParser.json());
 
 const vonage = new Vonage({
