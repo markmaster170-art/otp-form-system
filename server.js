@@ -1,52 +1,46 @@
 import express from "express";
 import bodyParser from "body-parser";
-import twilio from "twilio";
+import { Vonage } from "@vonage/server-sdk";
 
 const app = express();
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
-// 🔒 قراءة القيم من متغيرات البيئة
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const fromWhatsApp = process.env.TWILIO_PHONE_NUMBER;
+const vonage = new Vonage({
+  apiKey: process.env.VONAGE_API_KEY,
+  apiSecret: process.env.VONAGE_API_SECRET,
+});
 
-// ✅ اختبار: طباعة جزئية للقيم حتى نتأكد أنها وُجدت
-console.log("🔍 Checking Twilio environment variables...");
-console.log("TWILIO_ACCOUNT_SID:", accountSid ? accountSid.slice(0, 6) + "..." : "❌ Not found");
-console.log("TWILIO_AUTH_TOKEN:", authToken ? authToken.slice(0, 6) + "..." : "❌ Not found");
-console.log("TWILIO_PHONE_NUMBER:", fromWhatsApp ? fromWhatsApp : "❌ Not found");
-
-const client = twilio(accountSid, authToken);
+console.log("🔍 Checking Vonage environment variables...");
+console.log("VONAGE_API_KEY:", process.env.VONAGE_API_KEY ? process.env.VONAGE_API_KEY.slice(0, 6) + "..." : "❌ Not found");
+console.log("VONAGE_API_SECRET:", process.env.VONAGE_API_SECRET ? "✅ Found" : "❌ Not found");
 
 let generatedOtp = "";
 let userPhone = "";
 
-// إرسال OTP
 app.post("/submit", async (req, res) => {
   userPhone = req.body.phone;
   generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
 
-  try {
-    await client.messages.create({
-      body: `رمز التحقق الخاص بك هو: ${generatedOtp}`,
-      from: fromWhatsApp,
-      to: `whatsapp:${userPhone}`,
-    });
+  const from = "Verify";
+  const to = userPhone;
+  const text = `رمز التحقق الخاص بك هو: ${generatedOtp}`;
 
-    res.status(200).send("OTP sent");
+  try {
+    const response = await vonage.sms.send({ to, from, text });
+    console.log("✅ Vonage SMS sent:", response);
+    res.status(200).send("OTP sent successfully");
   } catch (error) {
-    console.error("❌ Twilio error:", error.message);
+    console.error("❌ Vonage SMS error:", error);
     res.status(500).send("Error sending OTP");
   }
 });
 
-// التحقق من OTP
 app.post("/verify", (req, res) => {
   if (req.body.otp === generatedOtp) {
-    res.status(200).send("Verified");
+    res.status(200).send("Verified ✅");
   } else {
-    res.status(400).send("Invalid OTP");
+    res.status(400).send("Invalid OTP ❌");
   }
 });
 
